@@ -1,10 +1,11 @@
 package lectures.part3concurrency
 
+import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.atomic.AtomicReference
-
+import scala.collection.parallel.CollectionConverters._
 import scala.collection.parallel.{ForkJoinTaskSupport, Task, TaskSupport}
 import scala.collection.parallel.immutable.ParVector
-import scala.concurrent.forkjoin.ForkJoinPool
+//import scala.concurrent.forkjoin.ForkJoinPool
 
 /**
   * Created by Daniel.
