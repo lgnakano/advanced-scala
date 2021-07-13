@@ -51,7 +51,7 @@ object Intro extends App {
   // pool.shutdownNow()
   println(pool.isShutdown) // true
 
-  def runInParallel = {
+  def runInParallel(): Unit = {
     var x = 0
 
     val thread1 = new Thread(() => {
@@ -74,7 +74,7 @@ object Intro extends App {
     override def toString: String = "" + amount
   }
 
-  def buy(account: BankAccount, thing: String, price: Int) = {
+  def buy(account: BankAccount, thing: String, price: Int): Unit = {
     account.amount -= price // account.amount = account.amount - price
 //    println("I've bought " + thing)
 //    println("my account is now " + account)
@@ -100,7 +100,7 @@ object Intro extends App {
    */
 
   // option #1: use synchronized()
-  def buySafe(account: BankAccount, thing: String, price: Int) =
+  def buySafe(account: BankAccount, thing: String, price: Int): Unit =
     account.synchronized {
       // no two threads can evaluate this at the same time
       account.amount -= price
@@ -108,6 +108,17 @@ object Intro extends App {
       println("my account is now " + account)
     }
 
+    for (_ <- 1 to 10000) {
+      val account = new BankAccount(50000)
+      val thread1 = new Thread(() => buySafe(account, "shoes", 3000))
+      val thread2 = new Thread(() => buySafe(account, "iPhone12", 4000))
+
+      thread1.start()
+      thread2.start()
+      Thread.sleep(10)
+      if (account.amount != 43000) println("AHA: " + account.amount)
+  //    println()
+    }
   // option #2: use @volatile
 
   /**

@@ -21,7 +21,7 @@ object TypeClasses extends App {
 
   // option 2 - pattern matching
   object HTMLSerializerPM {
-    def serializeToHtml(value: Any) = value match {
+    def serializeToHtml(value: Any): Unit = value match {
       case User(n, a, e) =>
       case _ =>
     }
@@ -47,7 +47,7 @@ object TypeClasses extends App {
   // 1 - we can define serializers for other  types
   import java.util.Date
   object DateSerializer extends HTMLSerializer[Date] {
-    override def serialize(date: Date): String = s"<div>${date.toString()}</div>"
+    override def serialize(date: Date): String = s"<div>${date.toString}</div>"
   }
 
   // 2 - we can define MULTIPLE serializers
@@ -55,12 +55,27 @@ object TypeClasses extends App {
     def serialize(user: User): String = s"<div>${user.name} </div>"
   }
 
+  /**
+    * Equality
+    */
+  trait Equal[T] {
+    def apply(a: T, b: T): Boolean
+  }
+
+  implicit object NameEquality extends Equal[User] {
+    override def apply(a: User, b: User): Boolean = a.name == b.name
+  }
+
+  object FullEquality extends Equal[User] {
+    override def apply(a: User, b: User): Boolean = a.name == b.name && a.email == b.email
+  }
+
   // part 2
   object HTMLSerializer {
     def serialize[T](value: T)(implicit serializer: HTMLSerializer[T]): String =
       serializer.serialize(value)
 
-    def apply[T](implicit serializer: HTMLSerializer[T]) = serializer
+    def apply[T](implicit serializer: HTMLSerializer[T]): HTMLSerializer[T] = serializer
   }
 
   implicit object IntSerializer extends HTMLSerializer[Int] {
@@ -113,6 +128,20 @@ object TypeClasses extends App {
   // in some other part of the  code
   val standardPerms = implicitly[Permissions]
 
+  /*
+  Exercise: implement the TC pattern for the equality tc.
+ */
+
+  object Equal {
+    def apply[T](a: T, b: T)(implicit equalizer: Equal[T]): Boolean =
+      equalizer.apply(a,b)
+  }
+
+  val anotherJohn = User("John", 45, "anotherJohn@rtjvm.com")
+  println(Equal.apply(john, anotherJohn))
+  println(Equal(john, anotherJohn))
+
+  // AD-HOC polymorphism
 
 }
 
