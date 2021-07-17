@@ -1,5 +1,7 @@
 package lectures.part5ts
 
+import scala.language.reflectiveCalls
+
 /**
   * Created by Daniel.
   */
@@ -23,7 +25,7 @@ object StructuralTypes extends App {
   def closeQuietly(unifiedCloseable: UnifiedCloseable): Unit = unifiedCloseable.close()
 
   closeQuietly(new JavaCloseable {
-    override def close(): Unit = ???
+    override def close(): Unit = ()
   })
   closeQuietly(new HipsterCloseable)
 
